@@ -1,0 +1,25 @@
+<test-config>
+    <project.key>SANDBOX</project.key>
+    <project.name>Sandbox</project.name>
+    <project.descr>Sandbox project for testing.</project.descr>
+    <version.name>1.0</version.name>
+    <version.descr>Description of version 1.0</version.descr>
+    <version2.name>2.0</version2.name>
+    <component.name>core</component.name>
+    <component.descr>Core component</component.descr>
+    <user.name>petr.hejkal@doxologic.com</user.name>
+    <user.email>petr.hejkal@doxologic.com</user.email>
+    <user.dispname>Petr Hejkal</user.dispname>
+    <issue.key>SANDBOX-1</issue.key>
+    <issue.summary>First Test Issue</issue.summary>
+    <issue.type>Bug</issue.type>
+    <issue.priority>Trivial</issue.priority>
+    <issue.label1>problem</issue.label1>
+    <issue.label2>spring</issue.label2>
+    <issue.version>1.0</issue.version>
+    <issue.fixversion>2.0</issue.fixversion>
+    <issue.descr>Long description.</issue.descr>
+    <issue.orest>1w</issue.orest>
+    <issue.reest>2h</issue.reest>
+    <issue.watcher>jiri.novy@doxologic.com</issue.watcher>
+</test-config>
