@@ -56,15 +56,40 @@ class ProjectTest extends TestBase {
     }
 
     @Test
+    public void versionByName() throws Exception {
+        def version = sandbox.versionByName(p('version.name'))
+
+        Assert.assertNotNull(version);
+        Assert.assertEquals(p('version.name'), version.name);
+        Assert.assertEquals(p('version.descr'), version.description);
+    }
+
+    @Test
+    public void versionByName_nonFound() throws Exception {
+        Assert.assertNull(sandbox.versionByName('Non Exist Version'));
+    }
+
+    @Test
     public void components() throws Exception {
         def components = sandbox.components()
 
         Assert.assertTrue(components.size() > 0);
         Assert.assertEquals(p('component.name'), components[0].name);
         Assert.assertEquals(p('component.descr'), components[0].description);
-        Assert.assertEquals(p('user.name'), components[0].lead.name);
-        Assert.assertEquals(p('user.name'), components[0].assignee.name);
     }
 
+    @Test
+    public void componentByName() throws Exception {
+        def component = sandbox.componentByName(p('component.name'))
+
+        Assert.assertNotNull(component);
+        Assert.assertEquals(p('component.name'), component.name);
+        Assert.assertEquals(p('component.descr'), component.description);
+    }
+
+    @Test
+    public void componentByName_nonFound() throws Exception {
+        Assert.assertNull(sandbox.componentByName('Non Exist Component'));
+    }
 
 }

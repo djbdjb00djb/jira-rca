@@ -1,5 +1,4 @@
 package org.hejki.jira
-
 import groovy.json.JsonBuilder
 import groovy.transform.ToString
 /**
@@ -35,7 +34,18 @@ class Version extends JiraObject {
     }
 
     /**
-     * Create a version in specified project.
+     * Create a new version in the specified project.
+     *
+     * @param project the project for the new version
+     * @throws IllegalArgumentException if project key was not set
+     * @return this
+     */
+    public Version create(Project project) {
+        return create(project.key)
+    }
+
+    /**
+     * Create a new version in the specified project.
      *
      * @param projectKey required parameter which must contains a key of existing project
      * @throws IllegalArgumentException if parameter projectKey not set

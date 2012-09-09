@@ -42,7 +42,7 @@ class IssueType extends JiraObject {
      * @return the found issue type or null if none was found
      */
     public static IssueType findById(int id) {
-        return new IssueType(RestClient.instance.get("issuetype/$id"))
+        return find("issuetype/$id", {new IssueType(it)})
     }
 
     /**

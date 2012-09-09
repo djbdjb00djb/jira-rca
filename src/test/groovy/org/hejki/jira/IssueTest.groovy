@@ -14,7 +14,7 @@ class IssueTest extends TestBase {
     }
 
     @Test
-    @Ignore('Remove of a newly created issues not implemented')
+    @Ignore('Remove for a new created issues not implemented')
     public void create() throws Exception {
         def task = IssueType.findByName('Task')
         def priority = Priority.findByName('Minor')

@@ -12,7 +12,7 @@ class VersionTest extends TestBase {
 
     @Before
     public void create() throws Exception {
-        version = sandbox.versions().find {it.name == 'test'}
+        version = sandbox.versionByName('test', false)
         if (version) {
             Assert.assertTrue(version.delete())
         }
@@ -24,34 +24,39 @@ class VersionTest extends TestBase {
                 released: true,
                 releaseDate: '2012-09-01'
         )
-        version.create(p('project.key'))
+        version.create(sandbox)
 
         Assert.assertNotNull(version.id);
         Assert.assertNotNull(version.self);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void create_withoutProject() throws Exception {
+        new Version().create(null)
+    }
+
     @Test
     public void move_after() throws Exception {
-        def versions = sandbox.versions()
+        def versions = sandbox.versions(false)
 
         assertPosition(versions, [1,2,'test'])
         version.move(versions[0].id) // move after 1.0
-        assertPosition(sandbox.versions(), [1,'test',2])
+        assertPosition(sandbox.versions(false), [1,'test',2])
     }
 
     @Test
     public void move_position() throws Exception {
-        def versions = sandbox.versions()
+        def versions = sandbox.versions(false)
 
         assertPosition(versions, [1,2,'test'])
         version.move('First')
-        assertPosition(sandbox.versions(), ['test',1,2])
+        assertPosition(sandbox.versions(false), ['test',1,2])
         version.move('Last')
-        assertPosition(sandbox.versions(), [1,2,'test'])
+        assertPosition(sandbox.versions(false), [1,2,'test'])
         version.move('Earlier')
-        assertPosition(sandbox.versions(), [1,'test',2])
+        assertPosition(sandbox.versions(false), [1,'test',2])
         version.move('Later')
-        assertPosition(sandbox.versions(), [1,2,'test'])
+        assertPosition(sandbox.versions(false), [1,2,'test'])
     }
 
     @Test
@@ -86,6 +91,21 @@ class VersionTest extends TestBase {
                 Assert.assertEquals(p('version2.name'), versions[i].name);
             }
         }
+    }
+
+    @Test(expected = IllegalStateException)
+    public void delete_withoutId() throws Exception {
+        new Version().delete()
+    }
+
+    @Test(expected = IllegalStateException)
+    public void move_withoutId() throws Exception {
+        new Version().move(1)
+    }
+
+    @Test(expected = IllegalStateException)
+    public void modify_withoutId() throws Exception {
+        new Version().modify()
     }
 
     @After

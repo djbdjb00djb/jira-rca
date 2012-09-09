@@ -7,11 +7,6 @@ import org.junit.Test
 class UserTest extends TestBase {
     static User hejki
 
-    @Test
-    public void list() throws Exception {
-        println User.list()
-    }
-
     @BeforeClass
     public static void findUser() {
         hejki = User.findByName(p('user.name'))

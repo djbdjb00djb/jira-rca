@@ -12,7 +12,7 @@ CONFIG_FILE="$SCRIPT_DIR/src/test/resources/config.xml"
 
 echo '<?xml version="1.0" encoding="utf-8"?>' > "$CONFIG_FILE"
 echo '<config trustall="true">' >> "$CONFIG_FILE"
-echo "    <server>$SERVER</server>" >> "$CONFIG_FILE"
+echo "    <url>$SERVER</url>" >> "$CONFIG_FILE"
 echo "    <username>$USER</username>" >> "$CONFIG_FILE"
 echo "    <password>$PASS</password>" >> "$CONFIG_FILE"
 echo '</config>' >> "$CONFIG_FILE"

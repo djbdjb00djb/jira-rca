@@ -1,10 +1,10 @@
-JIRA-RCI
+JIRA-RCA
 ========
 
 Introduction
 ------------
 
-JIRA-RCI is JIRA REST Client API for Groovy. Provides API for common tasks with
+JIRA-RCA is JIRA REST Client API for Groovy. Provides API for common tasks with
 projects and issues in Atlassian's JIRA project tracker. API is based
 on [JIRA 5.1.4 REST API](http://docs.atlassian.com/jira/REST/latest/).
 
@@ -18,7 +18,9 @@ Features
 + list of projects
 + find by key
 + load details
++ find version by name
 + load list of versions
++ find component by name
 + load list of components
 
 **Project version**
@@ -49,26 +51,26 @@ Usage
 file on classpath (run script create-config.sh for creating configuration for tests).
 
 ```groovy
-RestClient.initSharedInstance(server, username, password)
+RestClient.initSharedInstance(restUrl, username, password)
 RestClient.trustAll()
 ```
 
 **Create a new version.**
 
 ```groovy
-Version version = new Version(name: '1.0', description: 'Basic version', releaseDate: new Date() + 14)
+Version newVersion = new Version(name: '1.0', description: 'Basic version', releaseDate: new Date() + 14)
 
-version.create('PROJKEY')
-version.move('Last')
+newVersion.create('PROJKEY')
+newVersion.move('Last')
 ```
 
 **Search and release old version.**
 
 ```groovy
 Project project = Project.findByKey('PROJKEY')
+Version oldVersion = project.versionByName('0.1')
 
-version = project.versions().find {it.name == '0.1'}
-version.modify(released: true)
+oldVersion.modify(released: true)
 ```
 
 **Create a new issue.**
@@ -77,10 +79,7 @@ version.modify(released: true)
 Project project   = Project.findByKey('PROJKEY')
 IssueType task    = IssueType.findByName('Task')
 Priority priority = Priority.findByName('Minor')
-def versions      = project.versions()
-Version version   = versions.find {it.name = '0.1'}
-Version fixvers   = versions.find {it.name = '1.0'}
-Component core    = project.components().find {it.name = 'core'}
+Component core    = project.componentByName('core')
 
 Issue issue = new Issue(
     project: project,
@@ -92,11 +91,11 @@ Issue issue = new Issue(
     labels: ['spring', 'problem'],
     originalEstimate: '4h',
     remainingEstimate: '4d',
-    versions: [version],
+    versions: [oldVersion],
     environment: 'IE 6',
     description: 'It sucks.',
     dueDate: new Date() - 1,
-    fixVersions: [fixvers],
+    fixVersions: [newVersion],
     components: [core]
 )
 issue.create()
@@ -104,11 +103,20 @@ issue.create()
 
 For more examples look at tests.
 
-Dependencies
-------------
+Building
+--------
 
-+ Groovy Runtime
-+ SLF4J
+### Requirements
+
+* [Maven](http://maven.apache.org) 3+
+* [Java](http://java.oracle.com) 5+
+* [Groovy](http://groovy.codehaus.org) 1.8+
+
+Check out and build:
+
+    git clone git://github.com/Hejki/jira-rca.git
+    cd jira-rca
+    mvn install
 
 Copyright and license
 ---------------------

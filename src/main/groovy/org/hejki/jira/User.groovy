@@ -25,11 +25,17 @@ class User extends JiraObject {
     private String displayName
     private boolean active
 
-    private User(json) {
-        fillFromMap(json)
+    private User(map) {
+        fillFromMap(map)
     }
 
+    /**
+     * Find an user by it's username.
+     *
+     * @param username the user login name
+     * @return the found user or null if none was found
+     */
     public static User findByName(String username) {
-        return new User(RestClient.instance.get("user?username=$username"))
+        return find("user?username=$username", {new User(it)})
     }
 }

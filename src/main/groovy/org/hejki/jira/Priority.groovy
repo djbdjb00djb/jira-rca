@@ -36,17 +36,17 @@ class Priority extends JiraObject {
     }
 
     /**
-     * Find issue priority by it's id.
+     * Find an issue priority by it's id.
      *
      * @param id the issue priority id
      * @return the found issue priority or null if none was found
      */
     public static Priority findById(int id) {
-        return new Priority(RestClient.instance.get("priority/$id"))
+        return find("priority/$id", {new Priority(it)})
     }
 
     /**
-     * Find issue priority by it's name.
+     * Find an issue priority by it's name.
      *
      * @param name the issue priority name
      * @return the found issue priority or null if none was found

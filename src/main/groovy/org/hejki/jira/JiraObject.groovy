@@ -7,7 +7,9 @@ import groovy.json.JsonBuilder
  */
 protected abstract class JiraObject {
     /**
-     * Call rest get method with the specified action.
+     * Call REST GET method with the specified action and process
+     * result as list of objects. For create object will be used
+     * specified closure, see example.
      * <p>Example: <code>list('project', {new Project(it)})</code>
      *
      * @param action GET action
@@ -22,6 +24,23 @@ protected abstract class JiraObject {
             list.add(constructObject.call(singleJson))
         }
         return list
+    }
+
+    /**
+     * Call REST GET method with the specified action and process
+     * result as one object.
+     * <p>Example: <code>find('issuetype/$id', {new IssueType(it)})</code>
+     *
+     * @param action GET action
+     * @param constructObject closure for JIRA object creation
+     * @return the created object or null if none found
+     */
+    protected static find(String action, Closure constructObject) {
+        def map = RestClient.instance.get(action)
+        if (map) {
+            return constructObject.call(map)
+        }
+        return null
     }
 
     /**

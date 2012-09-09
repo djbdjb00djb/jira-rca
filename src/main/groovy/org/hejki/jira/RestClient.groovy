@@ -22,10 +22,28 @@ class RestClient {
     /** Shared instance. */
     private static RestClient instance;
 
-    /** URL to server. */
-    private final String server
+    /** Base URL for REST actions. */
+    private final String restUrl
     /** Store Basic authentization for HTTP requests. */
     private String authorization
+
+    /**
+     * Sets the read timeout to a specified timeout, in milliseconds.
+     * A non-zero value specifies the timeout when reading from Input stream
+     * when a connection is established to a resource. If the timeout expires
+     * before there is data available for read, a java.net.SocketTimeoutException is raised.
+     * A timeout of zero is interpreted as an infinite timeout.
+     */
+    private int readTimeout = 0
+
+    /**
+     * Sets a specified timeout value, in milliseconds, to be used when opening
+     * a communications link to the resource referenced by this URLConnection.
+     * If the timeout expires before the connection can be established,
+     * a java.net.SocketTimeoutException is raised.
+     * A timeout of zero is interpreted as an infinite timeout.
+     */
+    private int connectTimeout = 0
 
     /**
      * Creates a new instance from XML configuration.
@@ -34,7 +52,7 @@ class RestClient {
      */
     private RestClient(String configurationUri) {
         def config = new XmlSlurper().parse(configurationUri)
-        this.server = config.server.text()
+        this.restUrl = config.url.text()
         setAuthorization(config.username.text(), config.password.text())
 
         if (config.@trustall.toBoolean()) {
@@ -45,24 +63,24 @@ class RestClient {
     /**
      * Creates a new instance with manual configuration.
      *
-     * @param server URL to JIRA server
-     * @param userName JIRA username
-     * @param password JIRA user password
+     * @param restUrl base URL for REST actions
+     * @param username HTTP Basic authorization username
+     * @param password HTTP Basic authorization user password
      */
-    private RestClient(server, userName, password) {
-        this.server = server
-        setAuthorization(userName, password)
+    private RestClient(restUrl, username, password) {
+        this.restUrl = restUrl
+        setAuthorization(username, password)
     }
 
     /**
      * Manual initialization method for users which do not want use XML configuration on classpath.
      *
-     * @param server URL to JIRA server
-     * @param username JIRA username
-     * @param password JIRA user password
+     * @param restUrl base URL for REST actions
+     * @param username HTTP Basic authorization username
+     * @param password HTTP Basic authorization user password
      * @return a new initialized REST client instance
      */
-    public static RestClient initSharedInstance(String server, String username, String password) {
+    public static RestClient initSharedInstance(String server, String username = null, String password = null) {
         instance = new RestClient(server, username, password)
         return instance
     }
@@ -72,7 +90,7 @@ class RestClient {
      * file on classpath.
      *
      * @throws IllegalStateException if config.xml file is not on classpath
-     * @return REST cleint instance
+     * @return REST client instance
      */
     public static RestClient getInstance() {
         if (!instance) {
@@ -88,12 +106,14 @@ class RestClient {
     /**
      * Set authorization parameters.
      *
-     * @param userName JIRA username
-     * @param password JIRA user password
+     * @param username HTTP Basic authorization username
+     * @param password HTTP Basic authorization user password
      * @return this
      */
-    public RestClient setAuthorization(String userName, String password) {
-        this.authorization = "Basic ${"$userName:$password".getBytes().encodeBase64().toString()}"
+    public RestClient setAuthorization(String username, String password) {
+        if (username && password) {
+            this.authorization = "Basic ${"$username:$password".getBytes().encodeBase64().toString()}"
+        }
         return this
     }
 
@@ -195,7 +215,7 @@ class RestClient {
 
     /**
      * Creates a HTTP connection to server. If username is set then Basic authorization
-     * was added to request headers. Created URL was "$server/rest/api/2/$action".
+     * was added to request headers. Created URL was "$server/$action".
      *
      * @param action REST action
      * @param method HTTP method
@@ -203,10 +223,12 @@ class RestClient {
      * @param doOutput set the flag to true if you intend to use the URL connection for output, false if not. The default is false.
      */
     private HttpURLConnection obtainConnection(String action, String method, doInput = true, doOutput = false) {
-        HttpURLConnection connection = "$server/rest/api/2/$action".toURL().openConnection()
+        HttpURLConnection connection = "$restUrl/$action".toURL().openConnection()
         connection.requestMethod = method
         connection.doInput = doInput
         connection.doOutput = doOutput
+        connection.readTimeout = readTimeout
+        connection.connectTimeout = connectTimeout
 
         if (authorization) {
             connection.setRequestProperty("Authorization", authorization)
@@ -223,20 +245,26 @@ class RestClient {
      * @param data request data, default null
      */
     private void logInfo(HttpURLConnection connection, String action, def response = null, def data = null) {
-        org.hejki.jira.RestClient.log.info("${connection.requestMethod} '$action' ${connection.responseCode}")
-        if (data) {org.hejki.jira.RestClient.log.info(" * data: $data")}
-        org.hejki.jira.RestClient.log.info(" * response type: ${connection.contentType}")
-        if (response) {org.hejki.jira.RestClient.log.info(" * response body: $response")}
+        log.info("${connection.requestMethod} '$action' ${connection.responseCode}")
+        if (data) {
+            log.info(" * data: $data")
+        }
+        log.info(" * response type: ${connection.contentType}")
+        if (response) {
+            log.info(" * response body: $response")
+        }
     }
 
     /**
      * Log error message with logger.
      */
     private void logError(HttpURLConnection connection, String action, def data = null) {
-        org.hejki.jira.RestClient.log.error("${connection.requestMethod} '$action' error ${connection.responseCode}")
-        if (data) {org.hejki.jira.RestClient.log.error(" * data: $data")}
-        org.hejki.jira.RestClient.log.error(" * response type: ${connection.contentType}")
-        org.hejki.jira.RestClient.log.error(" * error message: ${connection.errorStream}")
+        log.error("${connection.requestMethod} '$action' error ${connection.responseCode}")
+        if (data) {
+            log.error(" * data: $data")
+        }
+        log.error(" * response type: ${connection.contentType}")
+        log.error(" * error message: ${connection.errorStream}")
     }
 
     /**

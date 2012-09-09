@@ -1,4 +1,5 @@
 <test-config>
+    <test.port>38288</test.port>
     <project.key>SANDBOX</project.key>
     <project.name>Sandbox</project.name>
     <project.descr>Sandbox project for testing.</project.descr>

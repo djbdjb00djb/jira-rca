@@ -153,7 +153,7 @@ public class Issue extends JiraObject {
     }
 
     /**
-     * Adds a user to this issue's watcher list.
+     * Adds an user to this issue's watcher list.
      *
      * @param watcher a new watcher
      * @throws IllegalArgumentException if username not set
@@ -164,7 +164,7 @@ public class Issue extends JiraObject {
     }
 
     /**
-     * Adds a user to this issue's watcher list.
+     * Adds an user to this issue's watcher list.
      *
      * @param watcher a new watcher's username
      * @throws IllegalArgumentException if username not set
@@ -179,7 +179,7 @@ public class Issue extends JiraObject {
     }
 
     /**
-     * Removes a user from this issue's watcher list.
+     * Removes an user from this issue's watcher list.
      *
      * @param watcher watcher for remove from watch list
      * @throws IllegalArgumentException if username not set
@@ -190,7 +190,7 @@ public class Issue extends JiraObject {
     }
 
     /**
-     * Removes a user from this issue's watcher list.
+     * Removes an user from this issue's watcher list.
      *
      * @param watcher username of watcher
      * @throws IllegalArgumentException if username not set
